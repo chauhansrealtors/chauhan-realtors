@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useSeo } from '../hooks/useSeo';
 import { projects as fallbackProjects } from '../data/projects';
 import { useCmsData } from '../cms/CmsDataContext';
@@ -37,6 +38,7 @@ function normalizeProjectStatus(value: string | undefined): string {
 
 export function Projects() {
   const { projects, categories } = useCmsData();
+  const location = useLocation();
   const [search, setSearch] = useState('');
   const [type, setType] = useState('All');
   const [status, setStatus] = useState('All');
@@ -57,8 +59,9 @@ export function Projects() {
   useSeo({
     title: 'Projects | Chauhan Realtors — Premium Gurgaon Residences',
     description:
-    'Explore premium residential projects across Gurgaon curated by Chauhan Realtors — M3M GIC Forestia, Ganga Nine Zero, Smartworld Wellness, ATS HomeKraft and Wall Senior Living.',
-    image: projects[0]?.card || fallbackProjects[0].card
+    location.pathname === '/properties' ? 'Explore residential and commercial properties available through Chauhan Realtors.' : 'Explore premium residential projects across Gurgaon curated by Chauhan Realtors — M3M GIC Forestia, Ganga Nine Zero, Smartworld Wellness, ATS HomeKraft and Wall Senior Living.',
+    image: projects[0]?.card || fallbackProjects[0].card,
+    canonicalPath: location.pathname
   });
 
   return (

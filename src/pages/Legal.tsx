@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { useSeo } from '../hooks/useSeo';
 import { legalPages } from '../data/site';
 import { PageHeader } from '../components/PageHeader';
@@ -7,20 +7,28 @@ import { Reveal, GoldLine } from '../components/Reveal';
 
 type LegalKey = keyof typeof legalPages;
 
-const isLegalKey = (value: string | undefined): value is LegalKey =>
-value === 'privacy' || value === 'terms' || value === 'disclaimer';
+const legalAliases: Record<string, LegalKey> = {
+  privacy: 'privacy',
+  terms: 'terms',
+  disclaimer: 'disclaimer',
+  'privacy-policy': 'privacy',
+  'terms-and-conditions': 'terms'
+};
 
 export function Legal() {
   const { doc } = useParams<{doc: string;}>();
-  const key: LegalKey = isLegalKey(doc) ? doc : 'disclaimer';
+  const location = useLocation();
+  const routeKey = doc || location.pathname.split('/').filter(Boolean).pop();
+  const key: LegalKey = legalAliases[routeKey || ''] || 'disclaimer';
   const page = legalPages[key];
 
   useSeo({
     title: page.title + ' | Chauhan Realtors',
-    description: page.intro
+    description: page.intro,
+    canonicalPath: key === 'privacy' ? '/privacy-policy' : key === 'terms' ? '/terms-and-conditions' : '/disclaimer'
   });
 
-  if (!isLegalKey(doc)) return <Navigate to="/legal/disclaimer" replace />;
+  if (!legalAliases[routeKey || '']) return <Navigate to="/disclaimer" replace />;
 
   return (
     <>

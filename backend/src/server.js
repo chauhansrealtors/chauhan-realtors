@@ -11,6 +11,7 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import enquiryRoutes from './routes/enquiry.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
+import seoRoutes from './routes/seo.routes.js';
 
 import { Blog } from './models/Blog.js';
 import { Project } from './models/Project.js';
@@ -116,6 +117,8 @@ app.use('/api/health', healthRoutes);
 ------------------------------------------------------- */
 
 app.use('/api/auth', authRoutes);
+
+app.use(seoRoutes);
 
 app.use('/api/categories', categoryRoutes);
 

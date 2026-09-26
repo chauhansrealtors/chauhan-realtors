@@ -101,6 +101,10 @@ function Shell() {
           <Route path="/location" element={<Location />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/privacy-policy" element={<Legal />} />
+          <Route path="/terms-and-conditions" element={<Legal />} />
+          <Route path="/disclaimer" element={<Legal />} />
+          <Route path="/404" element={<NotFound />} />
           <Route path="/legal/:doc" element={<Legal />} />
           <Route path="*" element={<NotFound />} />
           </Routes>

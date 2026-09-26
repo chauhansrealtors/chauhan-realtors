@@ -17,9 +17,9 @@ const socialIcon: Record<string, typeof FacebookIcon> = {
 };
 
 const legalLinks = [
-{ label: 'Privacy Policy', to: '/legal/privacy' },
-{ label: 'Terms & Conditions', to: '/legal/terms' },
-{ label: 'Disclaimer', to: '/legal/disclaimer' }];
+{ label: 'Privacy Policy', to: '/privacy-policy' },
+{ label: 'Terms & Conditions', to: '/terms-and-conditions' },
+{ label: 'Disclaimer', to: '/disclaimer' }];
 
 
 export function Footer() {

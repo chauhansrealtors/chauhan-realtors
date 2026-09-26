@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useLocation, useParams, Navigate } from 'react-router-dom';
 import {
   MapPinIcon,
   PhoneIcon,
@@ -63,6 +63,7 @@ function Block({
 
 export function ProjectDetail() {
   const { slug } = useParams<{slug: string;}>();
+  const location = useLocation();
   const { projects } = useCmsData();
   const project = slug ? projects.find((item) => item.slug === slug) : undefined;
   const formRef = useRef<HTMLDivElement>(null);
@@ -74,7 +75,8 @@ export function ProjectDetail() {
     project.name + ' | Chauhan Realtors, Gurgaon' :
     'Project | Chauhan Realtors',
     description: project ? project.tagline : 'Premium residential projects across Gurgaon.',
-    image: project ? getProjectHero(project as any) : undefined
+    image: project ? getProjectHero(project as any) : undefined,
+    canonicalPath: location.pathname
   });
 
   if (!project) return <Navigate to="/projects" replace />;
