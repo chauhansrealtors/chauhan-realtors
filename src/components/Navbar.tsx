@@ -157,7 +157,7 @@ export function Navbar({ transparentOnTop = false, onEnquire }: NavbarProps) {
           </div>
           
             <nav aria-label="Mobile" className="mobile-menu-content pointer-events-auto mt-[72px] flex h-[calc(100%-72px)] flex-col overflow-hidden px-5 pb-8 pt-4">
-              <ul className="mobile-menu-list flex min-h-0 flex-1 flex-col divide-y divide-[#d4af37]/15">
+              <ul className="mobile-menu-list flex min-h-0 flex-none flex-col divide-y divide-[#d4af37]/15">
                 {navigation.map((item) =>
               <li key={item.to}>
                     <NavLink
@@ -171,7 +171,7 @@ export function Navbar({ transparentOnTop = false, onEnquire }: NavbarProps) {
                   </li>
               )}
               </ul>
-              <div className="mobile-menu-actions mt-6 grid shrink-0 gap-3">
+              <div className="mobile-menu-actions mt-4 grid shrink-0 gap-3">
                 <button
                 type="button"
                 onClick={onEnquire}

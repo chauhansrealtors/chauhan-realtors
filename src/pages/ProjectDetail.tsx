@@ -147,8 +147,8 @@ export function ProjectDetail() {
 
       <div className="bg-[#faf9f6] pb-24 pt-14 sm:pb-32 sm:pt-24">
         <div className="mx-auto max-w-shell px-5 lg:px-10">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
-            <div className="space-y-16 sm:space-y-24">
+          <div className="grid min-w-0 grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
+            <div className="min-w-0 space-y-16 sm:space-y-24">
               <Block title="Overview" id="overview">
                 <div className="max-w-3xl space-y-6">
                   {project.overview.map((paragraph) =>
@@ -262,7 +262,7 @@ export function ProjectDetail() {
               </div>
             </div>
 
-            <aside className="lg:sticky lg:top-28 lg:self-start">
+            <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
               <div className="border border-[#e5e1d8] bg-white p-7 shadow-[0_12px_30px_rgba(17,17,17,0.05)]">
                 <p className="text-[0.7rem] uppercase tracking-[0.2em] text-[#c9a227]">At a glance</p>
                 <dl className="mt-7 space-y-6">
