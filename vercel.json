@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/robots.txt",
+      "destination": "https://real-estate-website-3u6z.onrender.com/robots.txt"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "https://real-estate-website-3u6z.onrender.com/sitemap.xml"
     },

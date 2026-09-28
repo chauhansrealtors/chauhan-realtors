@@ -28,5 +28,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    server: {
+      proxy: {
+        '/sitemap.xml': 'http://localhost:5000',
+        '/robots.txt': 'http://localhost:5000',
+      },
+    },
   };
 })

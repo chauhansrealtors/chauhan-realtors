@@ -26,6 +26,7 @@ import categoryRoutes from './routes/category.routes.js';
 const app = express();
 
 const port = Number(process.env.PORT) || 5000;
+const robotsFilePath = fileURLToPath(new URL('../public/robots.txt', import.meta.url));
 
 /* -------------------------------------------------------
    CORS
@@ -78,6 +79,8 @@ app.use(
 ------------------------------------------------------- */
 
 app.use(express.json());
+
+app.get('/robots.txt', (_req, res) => res.type('text/plain').sendFile(robotsFilePath));
 
 let databasePromise;
 
