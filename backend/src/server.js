@@ -113,6 +113,8 @@ app.use(async (_req, res, next) => {
    Health
 ------------------------------------------------------- */
 
+app.use(seoRoutes);
+
 app.use('/api/health', healthRoutes);
 
 /* -------------------------------------------------------
@@ -120,8 +122,6 @@ app.use('/api/health', healthRoutes);
 ------------------------------------------------------- */
 
 app.use('/api/auth', authRoutes);
-
-app.use(seoRoutes);
 
 app.use('/api/categories', categoryRoutes);
 
