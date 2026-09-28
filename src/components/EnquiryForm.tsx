@@ -66,7 +66,6 @@ export function EnquiryForm({ source = 'website', id }: EnquiryFormProps) {
   const [status, setStatus] = useState<'idle' | 'opening' | 'done'>('idle');
   const [submissionError, setSubmissionError] = useState('');
   const reduce = useReducedMotion();
-
   const update =
   (key: keyof Values) =>
   (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -214,7 +213,7 @@ export function EnquiryForm({ source = 'website', id }: EnquiryFormProps) {
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'error-email' : undefined}
             className={fieldClass}
-            placeholder="you@email.com" />
+            placeholder="Your email address" />
           
           <FieldError id="error-email" message={errors.email} />
         </div>
@@ -252,7 +251,7 @@ export function EnquiryForm({ source = 'website', id }: EnquiryFormProps) {
           </select>
         </div>
 
-        <div className="sm:col-span-2">
+        <div>
           <label className={labelClass} htmlFor="enquiry-callbackTime">
             Preferred Callback Time
           </label>

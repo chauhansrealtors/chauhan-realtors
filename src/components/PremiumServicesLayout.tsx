@@ -1,5 +1,4 @@
 import React from 'react';
-import { ArrowRightIcon } from 'lucide-react';
 import { services } from './ServicesSection';
 import { Reveal } from './Reveal';
 
@@ -55,7 +54,6 @@ export function PremiumServicesLayout() {
                 <div className="flex items-start"><span className="flex h-10 w-10 items-center justify-center border border-[#c9a227]/40 text-[#c9a227] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:text-[#a98232]"><Icon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></span></div>
                 <h3 className="mt-7 max-w-[14rem] font-display text-[1.35rem] font-medium uppercase leading-[1.12] text-[#151515]">{title}</h3>
                 <p className="mt-4 text-[0.9rem] leading-relaxed text-[#4e4b45]">{text}</p>
-                <span className="mt-6 inline-flex items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[#c9a227]">Learn more <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" /></span>
               </Reveal>
             ))}
           </div>

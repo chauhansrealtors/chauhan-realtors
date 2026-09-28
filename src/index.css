@@ -111,7 +111,7 @@ body {
 }
 
 .image-overlay-left {
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.56) 38%, rgba(0, 0, 0, 0.32) 72%, rgba(0, 0, 0, 0.14) 100%);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0.36) 38%, rgba(0, 0, 0, 0.18) 72%, rgba(0, 0, 0, 0.08) 100%);
 }
 
 .image-overlay-center {
@@ -120,7 +120,7 @@ body {
 
 @media (max-width: 767px) {
   .image-overlay-left {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.36) 0%, rgba(0, 0, 0, 0.52) 52%, rgba(0, 0, 0, 0.68) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.36) 52%, rgba(0, 0, 0, 0.52) 100%);
   }
 }
 
@@ -148,178 +148,6 @@ body {
   .call-button-pulse {
     animation: none;
   }
-}
-
-/* Public-site luxury theme. Keep the admin surface on its existing palette. */
-.site-shell {
-  --public-page-bg: #080808;
-  --public-section-bg: #0d0d0d;
-  --public-surface-bg: #121212;
-  --public-text: #f5f5f5;
-  --public-muted: #a8a8a8;
-  background: #080808 !important;
-  color: #f5f5f5;
-}
-
-.site-shell [class~="bg-white"],
-.site-shell [class~="bg-[#f8f8f6]"],
-.site-shell [class~="bg-[#fafaf8]"],
-.site-shell [class~="bg-[#faf9f6]"],
-.site-shell [class~="bg-[#f5f3ee]"],
-.site-shell [class~="bg-[#f7f5f0]"],
-.site-shell [class~="bg-[#f2efe8]"],
-.site-shell [class~="bg-[#efeee9]"],
-.site-shell [class~="bg-[#f1f0ec]"],
-.site-shell [class~="bg-[#e3e2de]"] {
-  background-color: #0d0d0d !important;
-}
-
-.site-shell [class~="bg-white"],
-.site-shell [class~="bg-[#faf9f6]"],
-.site-shell [class~="bg-[#f7f5f0]"],
-.site-shell [class~="bg-[#f1f0ec]"] {
-  background-color: #121212 !important;
-}
-
-.site-shell [class~="text-[#111111]"],
-.site-shell [class~="text-[#151515]"],
-.site-shell [class~="text-[#111827]"],
-.site-shell [class~="text-[#071a3d]"],
-.site-shell h1,
-.site-shell h2,
-.site-shell h3,
-.site-shell h4,
-.site-shell h5,
-.site-shell h6 {
-  color: #f5f5f5 !important;
-}
-
-.site-shell [class~="text-[#333333]"],
-.site-shell [class~="text-[#444444]"],
-.site-shell [class~="text-[#4e4b45]"],
-.site-shell [class~="text-[#555555]"],
-.site-shell [class~="text-[#666666]"],
-.site-shell [class~="text-[#6b7280]"],
-.site-shell [class~="text-[#64748b]"],
-.site-shell [class~="text-[#777777]"],
-.site-shell [class~="text-[#6f695f]"] {
-  color: #a8a8a8 !important;
-}
-
-.site-shell [class~="border-[#e8e6e0]"],
-.site-shell [class~="border-[#e5e1d8]"],
-.site-shell [class~="border-[#e7e3d8]"],
-.site-shell [class~="border-[#e5e7eb]"],
-.site-shell [class~="border-black/12"] {
-  border-color: rgba(201, 166, 75, 0.2) !important;
-}
-
-.site-shell [class*="divide-"] > * {
-  border-color: rgba(201, 166, 75, 0.2) !important;
-}
-
-.site-shell article[class*="bg-"],
-.site-shell [data-service-card],
-.site-shell [data-testimonial-card] {
-  background-color: #121212 !important;
-  border-color: rgba(201, 166, 75, 0.2) !important;
-  border-radius: 14px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-}
-
-.site-shell > header button[aria-label="Open enquiry form"] {
-  background-color: transparent !important;
-  border-color: rgba(201, 166, 75, 0.7) !important;
-  color: #d8b85a !important;
-}
-
-.site-shell > header button[aria-label="Open enquiry form"]:hover {
-  background-color: #c9a64b !important;
-  color: #080808 !important;
-}
-
-.site-shell input,
-.site-shell select,
-.site-shell textarea {
-  background-color: #121212 !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #f5f5f5 !important;
-}
-
-.site-shell input:focus,
-.site-shell select:focus,
-.site-shell textarea:focus {
-  border-color: #c9a64b !important;
-}
-
-.site-shell input::placeholder,
-.site-shell textarea::placeholder {
-  color: #777777 !important;
-}
-
-.site-shell option {
-  background: #121212;
-  color: #f5f5f5;
-}
-
-.site-shell > header {
-  background-color: rgba(5, 5, 5, 0.92) !important;
-  border-color: rgba(201, 166, 75, 0.18) !important;
-  backdrop-filter: blur(12px);
-}
-
-.site-shell footer {
-  background-color: #050505 !important;
-}
-
-.site-shell [aria-labelledby="faq-heading"] button {
-  color: #f5f5f5 !important;
-}
-
-.site-shell [aria-labelledby="faq-heading"] > div > div {
-  border-color: rgba(201, 166, 75, 0.2) !important;
-}
-
-.site-shell .mobile-action-bar {
-  background-color: rgba(5, 5, 5, 0.96) !important;
-}
-
-/* Deliberately modest weight changes: preserve the existing scale and spacing. */
-.site-shell nav[aria-label="Primary"] a,
-.site-shell nav[aria-label="Mobile"] a {
-  font-weight: 600 !important;
-}
-
-.site-shell nav[aria-label="Primary"] a[aria-current="page"],
-.site-shell nav[aria-label="Mobile"] a[aria-current="page"] {
-  font-weight: 700 !important;
-}
-
-.site-shell main h1,
-.site-shell main h2,
-.site-shell main h3,
-.site-shell main h4,
-.site-shell main h5,
-.site-shell main h6 {
-  font-weight: 600 !important;
-}
-
-.site-shell main button,
-.site-shell > header button,
-.site-shell .mobile-action-bar a {
-  font-weight: 700 !important;
-}
-
-.site-shell .eyebrow,
-.site-shell [data-project-card] span,
-.site-shell [data-blog-card] p,
-.site-shell [data-service-card] h4,
-.site-shell [data-testimonial-card] strong {
-  font-weight: 600 !important;
-}
-
-.site-shell a[href^="tel:"] {
-  font-weight: 600 !important;
 }
 
 .site-shell main p,
@@ -407,8 +235,8 @@ a {
 [class~="text-[#d4af37]"] { color: #d8b968 !important; }
 [class~="bg-[#c9a227]"] { background-color: #c9a24a !important; }
 [class~="bg-[#d4af37]"] { background-color: #c9a24a !important; }
-[class~="hover\:bg-[#c9a227]"]:hover { background-color: #d8b968 !important; }
-[class~="hover\:bg-[#d4af37]"]:hover { background-color: #d8b968 !important; }
+[class~="hover\\:bg-[#c9a227]"]:hover { background-color: #d8b968 !important; }
+[class~="hover\\:bg-[#d4af37]"]:hover { background-color: #d8b968 !important; }
 [class~="text-[#666666]"] { color: #4e4b45 !important; }
 [class~="text-[#777777]"] { color: #78736a !important; }
 [class~="text-[#111111]"] { color: #151515 !important; }
@@ -423,7 +251,7 @@ a {
 [class~="bg-[#f4b400]"] { background-color: #c9a24a !important; }
 [class~="bg-[#dbe2ea]"] { background-color: #d7d0c2 !important; }
 [class~="border-[#f4b400]"] { border-color: #c9a24a !important; }
-[class~="hover\:border-[#f4b400]"]:hover { border-color: #c9a24a !important; }
+[class~="hover\\:border-[#f4b400]"]:hover { border-color: #c9a24a !important; }
 
 .font-display {
   font-family: 'Inter', Arial, Helvetica, sans-serif !important;

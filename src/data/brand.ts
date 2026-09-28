@@ -11,7 +11,7 @@ export const brand = {
     phoneDisplay: '+91 96258 68606'
   },
   whatsapp: { number: '919625868606', display: '+91 96258 68606' },
-  email: 'chauhansrealtors@gmail.com',
+  email: 'Info@chauhanrealtors.in',
   office: {
     lines: ['SVH Metro Street', 'Sector 84, Gurgaon'],
     mapQuery: 'SVH Metro Street, Sector 84, Gurgaon'
