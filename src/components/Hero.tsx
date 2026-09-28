@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRightIcon, PhoneIcon } from 'lucide-react';
@@ -8,20 +8,65 @@ import { HERO_IMAGE } from '../data/projects';
 import { LUX } from './Reveal';
 
 const CTA_HEIGHT = { height: '3.25rem' };
+const heroSlides = [
+  { src: HERO_IMAGE, alt: 'Chauhan Realtors luxury real estate cityscape' },
+  { src: '/developers/c-01.jpeg', alt: 'Modern residential tower with landscaped grounds' }
+] as const;
 
 export function Hero() {
   const reduce = useReducedMotion();
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [transitioning, setTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (reduce) return;
+
+    const preload = new Image();
+    preload.src = heroSlides[1].src;
+    let frameId = 0;
+    let resetTimeout: number | undefined;
+    const interval = window.setInterval(() => {
+      setTransitioning(true);
+      frameId = window.requestAnimationFrame(() => {
+        frameId = window.requestAnimationFrame(() => {
+          setActiveSlide((current) => (current + 1) % heroSlides.length);
+          resetTimeout = window.setTimeout(() => setTransitioning(false), 900);
+        });
+      });
+    }, 5000);
+
+    return () => {
+      window.clearInterval(interval);
+      window.cancelAnimationFrame(frameId);
+      if (resetTimeout !== undefined) window.clearTimeout(resetTimeout);
+    };
+  }, [reduce]);
 
   return (
     <section className="relative isolate flex min-h-[clamp(560px,100svh,680px)] w-full flex-col justify-end overflow-hidden bg-[#050505] pb-[calc(1.5rem+var(--mobile-action-bar-height))] pt-20 sm:min-h-[clamp(600px,78svh,680px)] sm:pb-14 sm:pt-28">
       <motion.div
-        aria-hidden="true"
-        className="absolute inset-0 -z-20"
+        className="absolute inset-0 -z-20 overflow-hidden"
         initial={reduce ? undefined : { scale: 1.04 }}
         animate={reduce ? undefined : { scale: 1.12 }}
         transition={{ duration: 26, ease: 'linear' }}>
-        
-        <img src={HERO_IMAGE} alt="" className="h-full w-full object-cover object-center" />
+        {heroSlides.map((slide, index) => {
+          const x = index === activeSlide ? 0 : transitioning ? -100 : 100;
+          const slideStyle = {
+            transform: `translateX(${x}%)`,
+            transition: transitioning ? 'transform 900ms ease-in-out' : 'none'
+          };
+          return (
+            <React.Fragment key={slide.src}>
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                aria-hidden={index !== activeSlide}
+                style={slideStyle}
+                className="absolute inset-0 h-full w-full object-cover object-center" />
+              {index === 1 ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-black/20" style={slideStyle} /> : null}
+            </React.Fragment>
+          );
+        })}
       </motion.div>
       <div aria-hidden="true" className="image-overlay image-overlay-left" />
       <div className="relative z-10 mx-auto box-border min-w-0 w-full max-w-full max-w-shell px-5 lg:px-10">
