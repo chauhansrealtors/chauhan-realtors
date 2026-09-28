@@ -20,7 +20,7 @@ function setMeta(selector: string, attr: 'name' | 'property', key: string, conte
 /** Applies document title, description and Open Graph tags per route. */
 export function useSeo({ title, description, image, canonicalPath }: SeoOptions) {
   useEffect(() => {
-    const siteUrl = 'https://chauhanrealtors.in';
+    const siteUrl = 'https://www.chauhanrealtors.in';
     const canonicalUrl = `${siteUrl}${canonicalPath || window.location.pathname}`;
     document.title = title;
     setMeta('meta[name="description"]', 'name', 'description', description);

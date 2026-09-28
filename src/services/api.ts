@@ -1,7 +1,7 @@
 const configuredBaseUrl = import.meta.env.VITE_API_URL?.trim();
 
 if (!configuredBaseUrl) {
-  throw new Error('VITE_API_URL is missing. Create a local .env.local with VITE_API_URL=http://localhost:5000.');
+  throw new Error('VITE_API_URL is missing. Set it in the frontend environment before building.');
 }
 
 if (!/^https?:\/\/[^/]+/i.test(configuredBaseUrl)) {

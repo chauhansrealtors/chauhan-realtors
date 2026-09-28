@@ -16,6 +16,7 @@ dist-ssr
 .env.local
 .env.*.local
 .env.*
+!.env.production
 backend/.env
 backend/.env.local
 backend/.env.*.local

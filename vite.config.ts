@@ -1,6 +1,8 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const productionApiUrl = 'https://real-estate-website-3u6z.onrender.com';
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -9,6 +11,9 @@ export default defineConfig(({ mode }) => {
     const apiUrl = env.VITE_API_URL?.trim();
     if (!apiUrl) {
       throw new Error('VITE_API_URL is required for production builds. Set it to the deployed Express backend URL.');
+    }
+    if (apiUrl !== productionApiUrl) {
+      throw new Error(`VITE_API_URL must be ${productionApiUrl} for production builds.`);
     }
 
     try {

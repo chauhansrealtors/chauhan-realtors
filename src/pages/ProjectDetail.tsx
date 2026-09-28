@@ -76,7 +76,7 @@ export function ProjectDetail() {
     'Project | Chauhan Realtors',
     description: project ? project.tagline : 'Premium residential projects across Gurgaon.',
     image: project ? getProjectHero(project as any) : undefined,
-    canonicalPath: location.pathname
+    canonicalPath: slug ? `/projects/${slug}` : '/projects'
   });
 
   if (!project) return <Navigate to="/projects" replace />;

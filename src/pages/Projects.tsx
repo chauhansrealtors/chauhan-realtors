@@ -61,7 +61,7 @@ export function Projects() {
     description:
     location.pathname === '/properties' ? 'Explore residential and commercial properties available through Chauhan Realtors.' : 'Explore premium residential projects across Gurgaon curated by Chauhan Realtors — M3M GIC Forestia, Ganga Nine Zero, Smartworld Wellness, ATS HomeKraft and Wall Senior Living.',
     image: projects[0]?.card || fallbackProjects[0].card,
-    canonicalPath: location.pathname
+    canonicalPath: '/projects'
   });
 
   return (
