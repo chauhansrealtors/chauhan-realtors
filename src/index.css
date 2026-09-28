@@ -150,18 +150,6 @@ body {
   }
 }
 
-.site-shell main p,
-.site-shell main h1,
-.site-shell main h2,
-.site-shell main h3,
-.site-shell main h4,
-.site-shell main li,
-.site-shell main dd,
-.site-shell main dt {
-  max-width: 100%;
-  min-width: 0;
-  overflow-wrap: break-word;
-}
 h1,
 h2,
 h3,
