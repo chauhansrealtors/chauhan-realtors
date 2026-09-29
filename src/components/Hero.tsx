@@ -14,53 +14,65 @@ const defaultHeroSlides = [
   { image: '/developers/c-01.jpeg', altText: 'Modern residential tower with landscaped grounds' }
 ] as const;
 
+const AUTO_PLAY_MS = 5000;
+const TRANSITION_MS = 900;
+
 export function Hero() {
   const reduce = useReducedMotion();
   const [slides, setSlides] = useState<Array<Pick<HeroSlide, 'image' | 'altText'>>>(defaultHeroSlides);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [transitioning, setTransitioning] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     let active = true;
+
     getHeroSlides()
       .then(({ data }) => {
         if (!active) return;
-        setSlides(data.length
+
+        const nextSlides = data.length
           ? data.map((slide) => ({ image: slide.image, altText: slide.altText || slide.title }))
-          : defaultHeroSlides);
-        setActiveSlide(0);
+          : defaultHeroSlides;
+
+        setSlides(nextSlides);
+        setCurrentIndex(0);
+        setIsTransitioning(false);
       })
       .catch(() => undefined);
 
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (slides.length < 2) return;
+    if (slides.length <= 1) return;
+
+    const nextImage = slides[(currentIndex + 1) % slides.length];
     const preload = new Image();
-    preload.src = slides[(activeSlide + 1) % slides.length].image;
-  }, [activeSlide, slides]);
+    preload.src = nextImage.image;
+  }, [currentIndex, slides]);
 
   useEffect(() => {
-    if (reduce || slides.length < 2) return;
-    let frameId = 0;
-    let resetTimeout: number | undefined;
-    const interval = window.setInterval(() => {
-      setTransitioning(true);
-      frameId = window.requestAnimationFrame(() => {
-        frameId = window.requestAnimationFrame(() => {
-          setActiveSlide((current) => (current + 1) % slides.length);
-          resetTimeout = window.setTimeout(() => setTransitioning(false), 900);
-        });
-      });
-    }, 5000);
+    if (reduce || slides.length <= 1 || isTransitioning) return;
 
-    return () => {
-      window.clearInterval(interval);
-      window.cancelAnimationFrame(frameId);
-      if (resetTimeout !== undefined) window.clearTimeout(resetTimeout);
-    };
-  }, [reduce, slides.length]);
+    const timer = window.setTimeout(() => {
+      setIsTransitioning(true);
+      setCurrentIndex((previous) => (previous + 1) % slides.length);
+    }, AUTO_PLAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [reduce, slides.length, isTransitioning, currentIndex]);
+
+  useEffect(() => {
+    if (!isTransitioning || slides.length <= 1) return;
+
+    const timer = window.setTimeout(() => {
+      setIsTransitioning(false);
+    }, TRANSITION_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [isTransitioning, slides.length]);
 
   return (
     <section className="relative isolate flex min-h-[clamp(560px,100svh,680px)] w-full flex-col justify-end overflow-hidden bg-[#050505] pb-[calc(1.5rem+var(--mobile-action-bar-height))] pt-20 sm:min-h-[clamp(600px,78svh,680px)] sm:pb-14 sm:pt-28">
@@ -69,32 +81,30 @@ export function Hero() {
         initial={reduce ? undefined : { scale: 1.04 }}
         animate={reduce ? undefined : { scale: 1.12 }}
         transition={{ duration: 26, ease: 'linear' }}>
-        {slides.map((slide, index) => {
-          const x = index === activeSlide ? 0 : transitioning ? -100 : 100;
-          const slideStyle = {
-            transform: `translateX(${x}%)`,
-            transition: transitioning ? 'transform 900ms ease-in-out' : 'none'
-          };
-          return (
-            <React.Fragment key={slide.image}>
-              <img
-                src={slide.image}
-                alt={slide.altText}
-                aria-hidden={index !== activeSlide}
-                onError={() => {
-                  if (slides !== defaultHeroSlides) {
-                    setSlides(defaultHeroSlides);
-                    setActiveSlide(0);
-                    setTransitioning(false);
-                  }
-                }}
-                style={slideStyle}
-                className="absolute inset-0 h-full w-full object-cover object-center" />
-              {index === 1 ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-black/20" style={slideStyle} /> : null}
-            </React.Fragment>
-          );
-        })}
+        <div className="absolute inset-0 h-full w-full">
+          <div
+            className="flex h-full w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ transform: `translate3d(-${currentIndex * 100}%, 0, 0)` }}>
+            {slides.map((slide, index) => (
+              <div key={`${slide.image}-${index}`} className="relative h-full w-full shrink-0 basis-full">
+                <img
+                  src={slide.image}
+                  alt={slide.altText}
+                  onError={() => {
+                    if (slides !== defaultHeroSlides) {
+                      setSlides(defaultHeroSlides);
+                      setCurrentIndex(0);
+                      setIsTransitioning(false);
+                    }
+                  }}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </motion.div>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-black/15" />
       <div aria-hidden="true" className="image-overlay image-overlay-left" />
       <div className="relative z-10 mx-auto box-border min-w-0 w-full max-w-full max-w-shell px-5 lg:px-10">
 

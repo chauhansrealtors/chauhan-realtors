@@ -128,18 +128,6 @@ export function TrustedDeveloperNetwork() {
           </button>
         </div>
 
-        <div className="mt-6 flex items-center justify-center gap-2" aria-label="Developer carousel pagination">
-          {developers.map((developer, index) => (
-            <button
-              key={`${developer.logo}-${index}`}
-              type="button"
-              onClick={() => setActiveIndex(initialIndex + index)}
-              aria-label={`Show ${developer.name} ${index + 1}`}
-              aria-current={displayIndex === index ? 'true' : undefined}
-              className="flex h-10 w-10 items-center justify-center"
-              ><span aria-hidden="true" className={`block rounded-full transition-all duration-300 ${displayIndex === index ? 'h-1.5 w-6 bg-[#c9a227]' : 'h-1.5 w-1.5 bg-[#c9a227]/30 hover:bg-[#c9a227]/60'}`} /></button>
-          ))}
-        </div>
       </div>
     </section>
   );
