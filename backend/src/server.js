@@ -19,9 +19,11 @@ import { Property } from './models/Property.js';
 import { Service } from './models/Service.js';
 import { Testimonial } from './models/Testimonial.js';
 import { Category } from './models/Category.js';
+import { HeroSlide } from './models/HeroSlide.js';
 
 import { createContentRouter } from './routes/contentCrud.js';
 import categoryRoutes from './routes/category.routes.js';
+import heroSlideRoutes from './routes/heroSlide.routes.js';
 
 const app = express();
 
@@ -86,10 +88,19 @@ let databasePromise;
 
 async function initializeDatabase() {
   if (!databasePromise) {
-    databasePromise = connectDatabase().then(() => Category.bulkWrite([
-      { updateOne: { filter: { name: 'Commercial' }, update: { $setOnInsert: { name: 'Commercial', slug: 'commercial', status: 'active' } }, upsert: true } },
-      { updateOne: { filter: { name: 'Residential' }, update: { $setOnInsert: { name: 'Residential', slug: 'residential', status: 'active' } }, upsert: true } }
-    ])).catch((error) => {
+    databasePromise = connectDatabase().then(async () => {
+      if (!(await HeroSlide.exists({}))) {
+        await HeroSlide.insertMany([
+          { image: '/1f9cee63-23c1-42b1-95dc-823c4deeed7d.jpg', title: 'Hero Slide 1', altText: 'Chauhan Realtors luxury real estate cityscape', status: 'active', order: 1 },
+          { image: '/developers/c-01.jpeg', title: 'Hero Slide 2', altText: 'Modern residential tower with landscaped grounds', status: 'active', order: 2 }
+        ]);
+      }
+
+      await Category.bulkWrite([
+        { updateOne: { filter: { name: 'Commercial' }, update: { $setOnInsert: { name: 'Commercial', slug: 'commercial', status: 'active' } }, upsert: true } },
+        { updateOne: { filter: { name: 'Residential' }, update: { $setOnInsert: { name: 'Residential', slug: 'residential', status: 'active' } }, upsert: true } }
+      ]);
+    }).catch((error) => {
       databasePromise = undefined;
       throw error;
     });
@@ -124,6 +135,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 
 app.use('/api/categories', categoryRoutes);
+app.use('/api/hero-slides', heroSlideRoutes);
 
 /* -------------------------------------------------------
    Uploads

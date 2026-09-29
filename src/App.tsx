@@ -25,6 +25,7 @@ import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminResourcePage } from './pages/admin/AdminResourcePage';
 import { Categories } from './pages/admin/Categories';
+import { HomeHero } from './pages/admin/HomeHero';
 import { CmsDataProvider } from './cms/CmsDataContext';
 
 const CALLBACK_POPUP_SHOWN_KEY = 'callbackPopupShown';
@@ -80,6 +81,7 @@ function Shell() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/projects" element={<AdminResourcePage resource="projects" />} />
             <Route path="/admin/categories" element={<Categories />} />
+            <Route path="/admin/home-hero" element={<HomeHero />} />
             <Route path="/admin/blogs" element={<AdminResourcePage resource="blogs" />} />
           </Route>
           <Route path="*" element={<AdminLogin />} />

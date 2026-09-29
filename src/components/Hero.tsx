@@ -5,31 +5,51 @@ import { ArrowRightIcon, PhoneIcon } from 'lucide-react';
 import { brand, callLink } from '../data/brand';
 import { heroContent } from '../data/site';
 import { HERO_IMAGE } from '../data/projects';
+import { getHeroSlides, type HeroSlide } from '../services/api';
 import { LUX } from './Reveal';
 
 const CTA_HEIGHT = { height: '3.25rem' };
-const heroSlides = [
-  { src: HERO_IMAGE, alt: 'Chauhan Realtors luxury real estate cityscape' },
-  { src: '/developers/c-01.jpeg', alt: 'Modern residential tower with landscaped grounds' }
+const defaultHeroSlides = [
+  { image: HERO_IMAGE, altText: 'Chauhan Realtors luxury real estate cityscape' },
+  { image: '/developers/c-01.jpeg', altText: 'Modern residential tower with landscaped grounds' }
 ] as const;
 
 export function Hero() {
   const reduce = useReducedMotion();
+  const [slides, setSlides] = useState<Array<Pick<HeroSlide, 'image' | 'altText'>>>(defaultHeroSlides);
   const [activeSlide, setActiveSlide] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
 
   useEffect(() => {
-    if (reduce) return;
+    let active = true;
+    getHeroSlides()
+      .then(({ data }) => {
+        if (!active) return;
+        setSlides(data.length
+          ? data.map((slide) => ({ image: slide.image, altText: slide.altText || slide.title }))
+          : defaultHeroSlides);
+        setActiveSlide(0);
+      })
+      .catch(() => undefined);
 
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
     const preload = new Image();
-    preload.src = heroSlides[1].src;
+    preload.src = slides[(activeSlide + 1) % slides.length].image;
+  }, [activeSlide, slides]);
+
+  useEffect(() => {
+    if (reduce || slides.length < 2) return;
     let frameId = 0;
     let resetTimeout: number | undefined;
     const interval = window.setInterval(() => {
       setTransitioning(true);
       frameId = window.requestAnimationFrame(() => {
         frameId = window.requestAnimationFrame(() => {
-          setActiveSlide((current) => (current + 1) % heroSlides.length);
+          setActiveSlide((current) => (current + 1) % slides.length);
           resetTimeout = window.setTimeout(() => setTransitioning(false), 900);
         });
       });
@@ -40,7 +60,7 @@ export function Hero() {
       window.cancelAnimationFrame(frameId);
       if (resetTimeout !== undefined) window.clearTimeout(resetTimeout);
     };
-  }, [reduce]);
+  }, [reduce, slides.length]);
 
   return (
     <section className="relative isolate flex min-h-[clamp(560px,100svh,680px)] w-full flex-col justify-end overflow-hidden bg-[#050505] pb-[calc(1.5rem+var(--mobile-action-bar-height))] pt-20 sm:min-h-[clamp(600px,78svh,680px)] sm:pb-14 sm:pt-28">
@@ -49,18 +69,25 @@ export function Hero() {
         initial={reduce ? undefined : { scale: 1.04 }}
         animate={reduce ? undefined : { scale: 1.12 }}
         transition={{ duration: 26, ease: 'linear' }}>
-        {heroSlides.map((slide, index) => {
+        {slides.map((slide, index) => {
           const x = index === activeSlide ? 0 : transitioning ? -100 : 100;
           const slideStyle = {
             transform: `translateX(${x}%)`,
             transition: transitioning ? 'transform 900ms ease-in-out' : 'none'
           };
           return (
-            <React.Fragment key={slide.src}>
+            <React.Fragment key={slide.image}>
               <img
-                src={slide.src}
-                alt={slide.alt}
+                src={slide.image}
+                alt={slide.altText}
                 aria-hidden={index !== activeSlide}
+                onError={() => {
+                  if (slides !== defaultHeroSlides) {
+                    setSlides(defaultHeroSlides);
+                    setActiveSlide(0);
+                    setTransitioning(false);
+                  }
+                }}
                 style={slideStyle}
                 className="absolute inset-0 h-full w-full object-cover object-center" />
               {index === 1 ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-black/20" style={slideStyle} /> : null}

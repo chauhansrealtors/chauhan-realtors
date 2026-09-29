@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3Icon, FileTextIcon, FolderKanbanIcon, LogOutIcon, MenuIcon, XIcon } from 'lucide-react';
+import { BarChart3Icon, FileTextIcon, FolderKanbanIcon, ImageIcon, LogOutIcon, MenuIcon, XIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../admin/AdminAuthContext';
 import { getDashboardStats } from '../../services/api';
@@ -8,7 +8,8 @@ const navigation = [
   ['Dashboard', BarChart3Icon, '/admin/dashboard'],
   ['Projects', FolderKanbanIcon, '/admin/projects'],
   ['Categories', FolderKanbanIcon, '/admin/categories'],
-  ['Blogs', FileTextIcon, '/admin/blogs']
+  ['Blogs', FileTextIcon, '/admin/blogs'],
+  ['Home Hero', ImageIcon, '/admin/home-hero']
 ] as const;
 
 export function AdminDashboard() {

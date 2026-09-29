@@ -27,6 +27,16 @@ export interface Category {
   createdAt?: string;
 }
 
+export interface HeroSlide {
+  _id: string;
+  image: string;
+  title: string;
+  altText: string;
+  status: 'active' | 'inactive';
+  order: number;
+  createdAt?: string;
+}
+
 interface AuthResponse {
   success: boolean;
   message: string;
@@ -137,6 +147,55 @@ export async function getCurrentAdmin(token: string) {
 
 export async function getPublicCollection<T>(resource: string) {
   return requestJson<{ success: boolean; data: T[] }>(`${AUTH_API_URL}/${resource}`);
+}
+
+export async function getHeroSlides() {
+  return getPublicCollection<HeroSlide>('hero-slides');
+}
+
+export async function getAdminHeroSlides(token: string) {
+  return requestJson<{ success: boolean; data: HeroSlide[] }>(`${AUTH_API_URL}/hero-slides/admin/all`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function createHeroSlide(payload: Omit<HeroSlide, '_id' | 'createdAt'>, token: string) {
+  return requestJson<{ success: boolean; data: HeroSlide }>(`${AUTH_API_URL}/hero-slides`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateHeroSlide(id: string, payload: Omit<HeroSlide, '_id' | 'createdAt'>, token: string) {
+  return requestJson<{ success: boolean; data: HeroSlide }>(`${AUTH_API_URL}/hero-slides/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateHeroSlideStatus(id: string, status: HeroSlide['status'], token: string) {
+  return requestJson<{ success: boolean; data: HeroSlide }>(`${AUTH_API_URL}/hero-slides/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function reorderHeroSlides(orderedIds: string[], token: string) {
+  return requestJson<{ success: boolean; data: HeroSlide[] }>(`${AUTH_API_URL}/hero-slides/reorder`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ orderedIds }),
+  });
+}
+
+export async function deleteHeroSlide(id: string, token: string) {
+  return requestJson<{ success: boolean }>(`${AUTH_API_URL}/hero-slides/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
 
 export async function getCategories() {

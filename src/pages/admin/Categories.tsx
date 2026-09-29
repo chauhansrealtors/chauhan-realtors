@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { BarChart3Icon, FileTextIcon, FolderKanbanIcon, LogOutIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { BarChart3Icon, FileTextIcon, FolderKanbanIcon, ImageIcon, LogOutIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../admin/AdminAuthContext';
 import { createCategory, deleteCategory, getAdminCategories, type Category, updateCategory } from '../../services/api';
 
-const navigation = [['Dashboard', BarChart3Icon, '/admin/dashboard'], ['Projects', FolderKanbanIcon, '/admin/projects'], ['Categories', FolderKanbanIcon, '/admin/categories'], ['Blogs', FileTextIcon, '/admin/blogs']] as const;
+const navigation = [['Dashboard', BarChart3Icon, '/admin/dashboard'], ['Projects', FolderKanbanIcon, '/admin/projects'], ['Categories', FolderKanbanIcon, '/admin/categories'], ['Blogs', FileTextIcon, '/admin/blogs'], ['Home Hero', ImageIcon, '/admin/home-hero']] as const;
 const fieldClass = 'h-11 w-full border border-[#b48c32]/30 bg-[#fbfaf6] px-3 text-sm outline-none focus:border-[#c9a227]';
 
 export function Categories() {
