@@ -21,6 +21,7 @@ const developers = [
 ] as const;
 
 const AUTOPLAY_MS = 3200;
+const MOBILE_QUERY = '(max-width: 767px)';
 const developersPerCycle = developers.length;
 const initialIndex = developersPerCycle + developersPerCycle - 2;
 const slides = [...developers, ...developers, ...developers, ...developers];
@@ -30,7 +31,8 @@ export function TrustedDeveloperNetwork() {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [trackOffset, setTrackOffset] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(() => typeof window === 'undefined' || !window.matchMedia(MOBILE_QUERY).matches);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches);
 
   const updateTrackOffset = () => {
     const track = trackRef.current;
@@ -45,10 +47,17 @@ export function TrustedDeveloperNetwork() {
   }, [activeIndex]);
 
   useEffect(() => {
-    if (isPaused) return undefined;
+    if (isPaused || isMobile) return undefined;
     const timer = window.setInterval(() => setActiveIndex((index) => index + 1), AUTOPLAY_MS);
     return () => window.clearInterval(timer);
-  }, [isPaused]);
+  }, [isMobile, isPaused]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_QUERY);
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener('change', updateIsMobile);
+    return () => mediaQuery.removeEventListener('change', updateIsMobile);
+  }, []);
 
   const move = (direction: number) => setActiveIndex((index) => index + direction);
 
@@ -88,7 +97,7 @@ export function TrustedDeveloperNetwork() {
         </div>
 
         <div
-          className="relative mt-12"
+          className="relative mt-12 flex items-center gap-2 md:block"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onFocus={() => setIsPaused(true)}
@@ -99,15 +108,23 @@ export function TrustedDeveloperNetwork() {
             type="button"
             onClick={() => move(-1)}
             aria-label="Previous developer"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#c9a227]/60 bg-[#151515] text-[#c9a227] shadow-[0_8px_20px_rgba(17,17,17,0.12)] transition duration-200 hover:border-[#c9a227] hover:bg-[#c9a227] hover:text-[#151515] active:scale-95 md:hidden">
+            <ArrowLeftIcon className="h-5 w-5" aria-hidden="true" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => move(-1)}
+            aria-label="Previous developer"
             className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center border border-[#c9a227]/35 bg-[#efeee9] text-[#151515] shadow-[0_8px_20px_rgba(17,17,17,0.08)] transition hover:border-[#c9a227] hover:text-[#c9a227] lg:flex">
             <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
           </button>
 
-          <div className="developer-mobile-viewport overflow-hidden px-1 py-2">
+          <div className="developer-mobile-viewport min-w-0 flex-1 overflow-hidden px-1 py-2">
             <div
               ref={trackRef}
-              className="developer-mobile-track flex gap-4 sm:gap-5"
-              style={{ transform: `translateX(-${trackOffset}px)`, transition: isTransitioning ? 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none' }}
+              className="developer-mobile-track flex w-full gap-4 sm:gap-5"
+              style={{ transform: isMobile ? `translateX(-${activeIndex * 100}%)` : `translateX(-${trackOffset}px)`, transition: isTransitioning ? 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none' }}
               onTransitionEnd={handleTransitionEnd}>
               {slides.map((developer, index) => (
                 <div key={`${developer.logo}-${index}`} className="flex min-w-0 shrink-0 basis-[78%] sm:basis-[calc(33.333%-0.85rem)] lg:basis-[calc(20%-1rem)]">
@@ -118,6 +135,14 @@ export function TrustedDeveloperNetwork() {
               ))}
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => move(1)}
+            aria-label="Next developer"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#c9a227]/60 bg-[#151515] text-[#c9a227] shadow-[0_8px_20px_rgba(17,17,17,0.12)] transition duration-200 hover:border-[#c9a227] hover:bg-[#c9a227] hover:text-[#151515] active:scale-95 md:hidden">
+            <ArrowRightIcon className="h-5 w-5" aria-hidden="true" />
+          </button>
 
           <button
             type="button"
