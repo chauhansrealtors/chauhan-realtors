@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 
 const developers = [
@@ -20,67 +20,189 @@ const developers = [
   { name: 'Trusted Developer', logo: '/c-12.jpeg' }
 ] as const;
 
-const AUTOPLAY_MS = 3200;
-const MOBILE_QUERY = '(max-width: 767px)';
-const developersPerCycle = developers.length;
-const initialIndex = developersPerCycle + developersPerCycle - 2;
-const slides = [...developers, ...developers, ...developers, ...developers];
+const slides = [...developers, ...developers, ...developers];
+const CYCLE_LENGTH = developers.length;
+const AUTOPLAY_SPEED = 24;
+const RESUME_DELAY_MS = 2500;
 
 export function TrustedDeveloperNetwork() {
+  const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(initialIndex);
-  const [trackOffset, setTrackOffset] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(() => typeof window === 'undefined' || !window.matchMedia(MOBILE_QUERY).matches);
-  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches);
 
-  const updateTrackOffset = () => {
+  useEffect(() => {
+    const viewport = viewportRef.current;
     const track = trackRef.current;
-    const slide = track?.children[activeIndex] as HTMLElement | undefined;
-    if (slide) setTrackOffset(slide.offsetLeft);
-  };
+    if (!viewport || !track) return undefined;
+    const carousel = viewport.parentElement;
+    if (!carousel) return undefined;
 
-  useEffect(() => {
-    updateTrackOffset();
-    window.addEventListener('resize', updateTrackOffset);
-    return () => window.removeEventListener('resize', updateTrackOffset);
-  }, [activeIndex]);
+    let animationFrame = 0;
+    let idleTimer = 0;
+    let previousFrameTime = 0;
+    let fractionalScroll = 0;
+    let cycleWidth = 0;
+    let isVisible = false;
+    let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let isPointerActive = false;
 
-  useEffect(() => {
-    if (isPaused || isMobile) return undefined;
-    const timer = window.setInterval(() => setActiveIndex((index) => index + 1), AUTOPLAY_MS);
-    return () => window.clearInterval(timer);
-  }, [isMobile, isPaused]);
+    const normalizePosition = () => {
+      if (!cycleWidth) return;
+      while (viewport.scrollLeft < cycleWidth * 0.5) viewport.scrollLeft += cycleWidth;
+      while (viewport.scrollLeft >= cycleWidth * 2.5) viewport.scrollLeft -= cycleWidth;
+    };
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(MOBILE_QUERY);
-    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
-    mediaQuery.addEventListener('change', updateIsMobile);
-    return () => mediaQuery.removeEventListener('change', updateIsMobile);
+    const updateCycleWidth = () => {
+      const firstSlide = track.children[0] as HTMLElement | undefined;
+      const nextCycleSlide = track.children[CYCLE_LENGTH] as HTMLElement | undefined;
+      if (!firstSlide || !nextCycleSlide) return;
+
+      const nextCycleWidth = nextCycleSlide.offsetLeft - firstSlide.offsetLeft;
+      if (!nextCycleWidth) return;
+      cycleWidth = nextCycleWidth;
+      normalizePosition();
+    };
+
+    const canAutoplay = () =>
+      isVisible && !isReducedMotion && !document.hidden && !isPointerActive;
+
+    const stopAutoplay = () => {
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+      previousFrameTime = 0;
+      fractionalScroll = 0;
+    };
+
+    const animate = (time: number) => {
+      animationFrame = 0;
+      if (!canAutoplay()) return;
+
+      if (previousFrameTime) {
+        const elapsed = Math.min(time - previousFrameTime, 50);
+        fractionalScroll += elapsed * AUTOPLAY_SPEED / 1000;
+        const distance = Math.floor(fractionalScroll);
+        if (distance) {
+          viewport.scrollLeft += distance;
+          fractionalScroll -= distance;
+          normalizePosition();
+        }
+      }
+      previousFrameTime = time;
+      animationFrame = window.requestAnimationFrame(animate);
+    };
+
+    const startAutoplay = () => {
+      if (canAutoplay() && !animationFrame) {
+        animationFrame = window.requestAnimationFrame(animate);
+      }
+    };
+
+    const resumeAfterIdle = () => {
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        normalizePosition();
+        startAutoplay();
+      }, RESUME_DELAY_MS);
+    };
+
+    const pauseForInteraction = () => {
+      stopAutoplay();
+      window.clearTimeout(idleTimer);
+    };
+
+    const handlePointerDown = () => {
+      isPointerActive = true;
+      pauseForInteraction();
+    };
+
+    const handlePointerUp = () => {
+      if (!isPointerActive) return;
+      isPointerActive = false;
+      resumeAfterIdle();
+    };
+
+    const handleWheel = () => {
+      pauseForInteraction();
+      resumeAfterIdle();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (['ArrowLeft', 'ArrowRight', 'Home', 'End', ' ', 'Enter'].includes(event.key)) {
+        pauseForInteraction();
+        resumeAfterIdle();
+      }
+    };
+
+    const checkVisibility = () => {
+      const bounds = viewport.getBoundingClientRect();
+      const visible = bounds.bottom > 0 && bounds.top < window.innerHeight;
+      if (visible === isVisible) return;
+      isVisible = visible;
+      if (isVisible) startAutoplay();
+      else pauseForInteraction();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) pauseForInteraction();
+      else checkVisibility();
+    };
+
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleMotionPreferenceChange = (event: MediaQueryListEvent) => {
+      isReducedMotion = event.matches;
+      if (isReducedMotion) pauseForInteraction();
+      else startAutoplay();
+    };
+
+    updateCycleWidth();
+    viewport.scrollLeft = cycleWidth;
+
+    const intersectionObserver = 'IntersectionObserver' in window
+      ? new IntersectionObserver(checkVisibility, { threshold: 0.1 })
+      : undefined;
+    intersectionObserver?.observe(viewport);
+
+    const resizeObserver = new ResizeObserver(updateCycleWidth);
+    resizeObserver.observe(viewport);
+    checkVisibility();
+
+    carousel.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+    window.addEventListener('scroll', checkVisibility, { passive: true });
+    window.addEventListener('resize', checkVisibility);
+    viewport.addEventListener('wheel', handleWheel, { passive: true });
+    carousel.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    motionPreference.addEventListener('change', handleMotionPreferenceChange);
+
+    return () => {
+      stopAutoplay();
+      window.clearTimeout(idleTimer);
+      intersectionObserver?.disconnect();
+      resizeObserver.disconnect();
+      carousel.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+      window.removeEventListener('scroll', checkVisibility);
+      window.removeEventListener('resize', checkVisibility);
+      viewport.removeEventListener('wheel', handleWheel);
+      carousel.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      motionPreference.removeEventListener('change', handleMotionPreferenceChange);
+    };
   }, []);
 
-  const move = (direction: number) => setActiveIndex((index) => index + direction);
+  const move = (direction: number) => {
+    const viewport = viewportRef.current;
+    const card = viewport?.querySelector<HTMLElement>('[data-developer-slide]');
+    if (!viewport || !card) return;
 
-  const handleTransitionEnd = () => {
-    if (activeIndex >= initialIndex + developersPerCycle) {
-      setIsTransitioning(false);
-      setActiveIndex(initialIndex);
-    } else if (activeIndex <= initialIndex - developersPerCycle) {
-      setIsTransitioning(false);
-      setActiveIndex(initialIndex);
-    }
+    const gap = Number.parseFloat(getComputedStyle(card.parentElement as HTMLElement).gap) || 0;
+    viewport.scrollBy({
+      left: direction * (card.offsetWidth + gap),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
   };
-
-  useEffect(() => {
-    if (!isTransitioning) {
-      requestAnimationFrame(() => {
-        updateTrackOffset();
-        requestAnimationFrame(() => setIsTransitioning(true));
-      });
-    }
-  }, [isTransitioning]);
-
-  const displayIndex = ((activeIndex % developersPerCycle) + developersPerCycle) % developersPerCycle;
 
   return (
     <section aria-labelledby="trusted-developers-heading" className="overflow-x-hidden bg-[#fafaf8] pb-12 pt-20 sm:pb-16 sm:pt-24 lg:pb-20 lg:pt-28">
@@ -96,22 +218,7 @@ export function TrustedDeveloperNetwork() {
           </p>
         </div>
 
-        <div
-          className="relative mt-12 flex items-center gap-2 md:block"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onFocus={() => setIsPaused(true)}
-          onBlur={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget)) setIsPaused(false);
-          }}>
-          <button
-            type="button"
-            onClick={() => move(-1)}
-            aria-label="Previous developer"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#c9a227]/60 bg-[#151515] text-[#c9a227] shadow-[0_8px_20px_rgba(17,17,17,0.12)] transition duration-200 hover:border-[#c9a227] hover:bg-[#c9a227] hover:text-[#151515] active:scale-95 md:hidden">
-            <ArrowLeftIcon className="h-5 w-5" aria-hidden="true" />
-          </button>
-
+        <div className="relative mt-12">
           <button
             type="button"
             onClick={() => move(-1)}
@@ -120,14 +227,21 @@ export function TrustedDeveloperNetwork() {
             <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
           </button>
 
-          <div className="developer-mobile-viewport min-w-0 flex-1 overflow-hidden px-1 py-2">
+          <div
+            ref={viewportRef}
+            className="developer-mobile-viewport overflow-x-auto overflow-y-hidden py-2"
+            role="region"
+            aria-label="Trusted developers"
+            tabIndex={0}>
             <div
               ref={trackRef}
-              className="developer-mobile-track flex w-full gap-4 sm:gap-5"
-              style={{ transform: isMobile ? `translateX(-${activeIndex * 100}%)` : `translateX(-${trackOffset}px)`, transition: isTransitioning ? 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none' }}
-              onTransitionEnd={handleTransitionEnd}>
+              className="flex w-full gap-4 sm:gap-5">
               {slides.map((developer, index) => (
-                <div key={`${developer.logo}-${index}`} className="flex min-w-0 shrink-0 basis-[78%] sm:basis-[calc(33.333%-0.85rem)] lg:basis-[calc(20%-1rem)]">
+                <div
+                  key={`${developer.logo}-${index}`}
+                  data-developer-slide
+                  aria-hidden={index < CYCLE_LENGTH || index >= CYCLE_LENGTH * 2}
+                  className="flex min-w-0 shrink-0 basis-[78%] sm:basis-[calc(33.333%-0.85rem)] lg:basis-[calc(20%-1rem)]">
                   <div className="flex aspect-[1.8/1] w-full items-center justify-center border border-[#d4af37]/20 bg-[#f1f0ec] p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] sm:p-6">
                     <img src={developer.logo} alt={developer.name} loading="lazy" className="h-full w-full object-contain" />
                   </div>
@@ -135,14 +249,6 @@ export function TrustedDeveloperNetwork() {
               ))}
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => move(1)}
-            aria-label="Next developer"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#c9a227]/60 bg-[#151515] text-[#c9a227] shadow-[0_8px_20px_rgba(17,17,17,0.12)] transition duration-200 hover:border-[#c9a227] hover:bg-[#c9a227] hover:text-[#151515] active:scale-95 md:hidden">
-            <ArrowRightIcon className="h-5 w-5" aria-hidden="true" />
-          </button>
 
           <button
             type="button"

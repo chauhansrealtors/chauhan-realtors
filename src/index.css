@@ -288,6 +288,17 @@ a {
   display: none;
 }
 
+.developer-mobile-viewport {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+.developer-mobile-viewport::-webkit-scrollbar {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .mobile-card-rail {
     display: flex;
@@ -318,19 +329,6 @@ a {
     overflow-wrap: break-word;
   }
 
-  .developer-mobile-viewport {
-    overflow-x: hidden !important;
-    overflow-y: hidden;
-    padding-inline: 0 !important;
-  }
-
-  .developer-mobile-track {
-    gap: 0 !important;
-  }
-
-  .developer-mobile-track > * {
-    flex-basis: 100% !important;
-  }
 }
 
 /* Keep supporting copy readable across the light premium surfaces. */
